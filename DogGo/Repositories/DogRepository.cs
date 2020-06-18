@@ -92,30 +92,33 @@ namespace DogGo.Repositories
 
                     if (reader.Read())
                     {
-                       Dog dog = new Dog()
+                        Dog dog = new Dog()
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
                             Breed = reader.GetString(reader.GetOrdinal("Breed")),
                             Notes = ReaderHelpers.GetNullableString(reader, "Notes"),
-                           ImageUrl = ReaderHelpers.GetNullableString(reader, "ImageUrl"),
+                            ImageUrl = ReaderHelpers.GetNullableString(reader, "ImageUrl")
 
-                       };
+                        };
 
                         reader.Close();
                         return dog;
                     }
+                    else
 
-                    reader.Close();
-                    return null;
+                    {
+                        reader.Close();
+                        return null;
+                    }    
                 }
             }
         }
 
    
 
-        public void AddOwner(Owner owner)
+        public void AddDog(Dog dog)
         {
             using (SqlConnection conn = Connection)
             {
@@ -123,20 +126,20 @@ namespace DogGo.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                    INSERT INTO Owner ([Name], Email, Phone, Address, NeighborhoodId)
+                    INSERT INTO Dog ([Name], OwnerId, Breed, Notes, ImageUrl)
                     OUTPUT INSERTED.ID
-                    VALUES (@name, @email, @phoneNumber, @address, @neighborhoodId);
+                    VALUES (@name, @ownerId, @breed, @notes, @imageUrl);
                 ";
 
-                    cmd.Parameters.AddWithValue("@name", owner.Name);
-                    cmd.Parameters.AddWithValue("@email", owner.Email);
-                    cmd.Parameters.AddWithValue("@phoneNumber", owner.Phone);
-                    cmd.Parameters.AddWithValue("@address", owner.Address);
-                    cmd.Parameters.AddWithValue("@neighborhoodId", owner.NeighborhoodId);
+                    cmd.Parameters.AddWithValue("@name", dog.Name);
+                    cmd.Parameters.AddWithValue("@ownerId", dog.OwnerId);
+                    cmd.Parameters.AddWithValue("@breed", dog.Breed);
+                    cmd.Parameters.AddWithValue("@notes", dog.Notes);
+                    cmd.Parameters.AddWithValue("@imageUrl", dog.ImageUrl);
 
                     int id = (int)cmd.ExecuteScalar();
 
-                    owner.Id = id;
+                    dog.Id = id;
                 }
             }
         }

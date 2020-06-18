@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DogGo.Models;
@@ -23,13 +24,13 @@ namespace DogGo.Controllers
 
         }
 
-            
+            //getting all of the dogs from the database 
             // GET: DogController
             public ActionResult Index()
         {
-            List<Dog> dogs = _dogRepo.GetAllDogs();
+            List<Dog> dog = _dogRepo.GetAllDogs();
 
-            return View(dogs);
+            return View(dog);
         }
 
         // GET: DogController/Details/5
@@ -51,18 +52,22 @@ namespace DogGo.Controllers
             return View();
         }
 
+        
         // POST: DogController/Create
+        //responsible for sending the post and Redirecting to the dogs page
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Dog dog)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _dogRepo.AddDog(dog);
+
+                return RedirectToAction("Index");
             }
-            catch
+                catch (Exception ex)
             {
-                return View();
+                return View(dog);
             }
         }
 
