@@ -23,7 +23,7 @@ namespace DogGo.Controllers
 
         }
 
-            //shows all of the dogs
+            
             // GET: DogController
             public ActionResult Index()
         {
@@ -35,7 +35,14 @@ namespace DogGo.Controllers
         // GET: DogController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            Dog dog = _dogRepo.GetDogById(id);
+
+            if (dog == null)
+            {
+                return NotFound();
+            }
+
+            return View(dog);
         }
 
         // GET: DogController/Create
