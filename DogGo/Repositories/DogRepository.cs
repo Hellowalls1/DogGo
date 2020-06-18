@@ -1,4 +1,5 @@
 ﻿using DogGo.Models;
+using DogGo.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -43,22 +44,24 @@ namespace DogGo.Repositories
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
                             Breed = reader.GetString(reader.GetOrdinal("Breed")),
-                            //Notes = reader.GetString(reader.GetOrdinal("Notes")),
-                            //ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl")),
-                           
+                            Notes = ReaderHelpers.GetNullableString(reader, "Notes"), 
+                            ImageUrl = ReaderHelpers.GetNullableString(reader, "ImageUrl"),
                         };
 
-
+                        //Two ways of handling the null value in data within an Ordinal setting
+                        // 1) Handle with the if statements below
+                        // 2) Or handle with creating the utilities file with the ReaderHelper.cs and call it into the ordinal place above
                         //We null check optimal columns
-                        if (reader.IsDBNull(reader.GetOrdinal("Notes")) == false)
-                        {
-                            dog .Notes = reader.GetString(reader.GetOrdinal("Notes"));
-                        }
 
-                        if (reader.IsDBNull(reader.GetOrdinal("ImageUrl")) == false)
-                        {
-                            dog.ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl"));
-                        }
+                        //if (reader.IsDBNull(reader.GetOrdinal("Notes")) == false)
+                        //{
+                        //    dog .Notes = reader.GetString(reader.GetOrdinal("Notes"));
+                        //}
+
+                        //if (reader.IsDBNull(reader.GetOrdinal("ImageUrl")) == false)
+                        //{
+                        //    dog.ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl"));
+                        //}
 
                         dogs.Add(dog);
                     }
@@ -77,9 +80,9 @@ namespace DogGo.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT d.Id, d.[Name], d.OwnerId, d.Breed, d.Notes, d.ImageUrl, o.Id
-                        FROM Dog d
-                        JOIN Owner o ON d.[OwnerId] = o.Id
+                        SELECT Id, [Name], OwnerId, Breed, Notes, ImageUrl
+                        FROM Dog 
+                        
                         
                         WHERE Id = @id";
 
@@ -93,11 +96,12 @@ namespace DogGo.Repositories
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
+                            OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
                             Breed = reader.GetString(reader.GetOrdinal("Breed")),
-                            Notes = reader.GetString(reader.GetOrdinal("Notes")),
-                            ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl")),
-                          
-                        };
+                            Notes = ReaderHelpers.GetNullableString(reader, "Notes"),
+                           ImageUrl = ReaderHelpers.GetNullableString(reader, "ImageUrl"),
+
+                       };
 
                         reader.Close();
                         return dog;
