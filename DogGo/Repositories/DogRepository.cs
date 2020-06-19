@@ -163,6 +163,8 @@ namespace DogGo.Repositories
                                 ImageUrl = @imageUrl
                             WHERE Id = @id";
 
+                    cmd.Parameters.AddWithValue("@id", dog.Id);
+
                     cmd.Parameters.AddWithValue("@name", dog.Name);
                     cmd.Parameters.AddWithValue("@ownerId", dog.OwnerId);
                     cmd.Parameters.AddWithValue("@breed", dog.Breed);
