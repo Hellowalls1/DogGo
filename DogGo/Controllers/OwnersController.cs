@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DogGo.Models;
+using DogGo.Models.ViewModels;
 using DogGo.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,17 +13,27 @@ namespace DogGo.Controllers
 {
     public class OwnersController : Controller
     {
+
+        //Allowing access to all of the different repositories because Owner Dtails view needs to know about all the things
         private readonly OwnerRepository _ownerRepo;
+        private readonly DogRepository _dogRepo;
+        private readonly WalkerRepository _walkerRepo;
+        private readonly NeighborhoodRepository _neighborhoodRepo;
 
         // The constructor accepts an IConfiguration object as a parameter. This class comes from the ASP.NET framework and is useful for retrieving things out of the appsettings.json file like connection strings.
         public OwnersController(IConfiguration config)
         {
             _ownerRepo = new OwnerRepository(config);
+            _dogRepo = new DogRepository(config);
+            _walkerRepo = new WalkerRepository(config);
+            _neighborhoodRepo = new NeighborhoodRepository(config);
         }
 
-        //PUT THE VIEW IN EACH OF YOUR POST METHODS!!!
+
+
 
         // GET: OwnersController
+        //PUT THE VIEW IN EACH OF YOUR POST METHODS!!!
         public ActionResult Index()
         {
 
@@ -37,13 +48,17 @@ namespace DogGo.Controllers
         public ActionResult Details(int id)
         {
             Owner owner = _ownerRepo.GetOwnerById(id);
+            List<Dog> dogs = _dogRepo.GetDogsByOwnerId(owner.Id);
+            List<Walker> walkers = _walkerRepo.GetWalkersInNeighborhood(owner.NeighborhoodId);
 
-            if (owner == null)
+            ProfileViewModel vm = new ProfileViewModel()
             {
-                return NotFound();
-            }
+                Owner = owner,
+                Dogs = dogs,
+                Walkers = walkers
+            };
 
-            return View(owner);
+            return View(vm);
         }
 
         //TWO FUNCTIONS BELOW ARE ADD!!!
@@ -51,12 +66,21 @@ namespace DogGo.Controllers
         //Create is a built in method
         //1st Method is What is Giving the User the Form (getting the user the form hehehe)
         //The get makes the view or Create.cshtml file that constructs the form (for Creating owners)
-        public ActionResult Create()
-        {
-            return View();
-        }
+        // GET: Owners/Create
 
+            public ActionResult Create()
 
+            {
+            List<Neighborhood> neighborhoods = _neighborhoodRepo.GetAll();
+
+            OwnerFormViewModel vm = new OwnerFormViewModel()
+            {
+                Owner = new Owner(),
+                Neighborhoods = neighborhoods
+            };
+
+            return View(vm);
+            }
 
         // POST: OwnersController/Create
         // This method is actually sending(Posting) the form 
@@ -78,6 +102,9 @@ namespace DogGo.Controllers
             }
         }
 
+
+
+
         // GET: OwnersController/Edit/5
         //the controller gets the owner id from the url route (owner/edit/2 whatever) 
         //we use that Id toi get the data from the database to fill out the inital state of the form
@@ -92,8 +119,16 @@ namespace DogGo.Controllers
                 return NotFound();
             }
 
-            //else return form with owner info
-            return View(owner);
+            //
+            List<Neighborhood> neighborhoods = _neighborhoodRepo.GetAll();
+
+            OwnerFormViewModel vm = new OwnerFormViewModel()
+            {
+                Owner = owner,
+                Neighborhoods = neighborhoods
+            };
+
+            return View(vm);
         }
 
         // POST: OwnersController/Edit/5
