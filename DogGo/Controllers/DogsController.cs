@@ -55,6 +55,7 @@ namespace DogGo.Controllers
         
         // POST: DogController/Create
         //responsible for sending the post and Redirecting to the dogs page
+        //INSERT STATEMENTS NEED PARENTHESIS AROUND THEM!!!
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Dog dog)
@@ -71,24 +72,36 @@ namespace DogGo.Controllers
             }
         }
 
-        // GET: DogController/Edit/5
+        //GET: DogController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            Dog dog = _dogRepo.GetDogById(id);
+
+            if (dog == null)
+            {
+                return NotFound();
+            }
+
+            return View(dog);
         }
 
-        // POST: DogController/Edit/5
+        //POST: DogController/Edit/5
+        //RedirectToAction sends you back to the main page of Dogs
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Dog dog)
         {
             try
-            {
-                return RedirectToAction(nameof(Index));
+            { 
+                _dogRepo.UpdateDog(dog);
+
+            return RedirectToAction("Index");
             }
-            catch
+
+            catch(Exception ex)
             {
-                return View();
+                return View(dog);
             }
         }
 

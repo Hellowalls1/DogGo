@@ -125,7 +125,8 @@ namespace DogGo.Repositories
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"
+                    //SQL INSERTS NEED PARENTHESIS 
+                    cmd.CommandText = @" 
                     INSERT INTO Dog ([Name], OwnerId, Breed, Notes, ImageUrl)
                     OUTPUT INSERTED.ID
                     VALUES (@name, @ownerId, @breed, @notes, @imageUrl);
@@ -144,7 +145,7 @@ namespace DogGo.Repositories
             }
         }
 
-        public void UpdateOwner(Owner owner)
+        public void UpdateDog(Dog dog)
         {
             using (SqlConnection conn = Connection)
             {
@@ -153,21 +154,22 @@ namespace DogGo.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                            UPDATE Owner
+                            UPDATE Dog
                             SET 
                                 [Name] = @name, 
-                                Email = @email, 
-                                Address = @address, 
-                                Phone = @phone, 
-                                NeighborhoodId = @neighborhoodId
+                                OwnerId = @ownerId, 
+                                Breed = @breed, 
+                                Notes = @notes, 
+                                ImageUrl = @imageUrl
                             WHERE Id = @id";
 
-                    cmd.Parameters.AddWithValue("@name", owner.Name);
-                    cmd.Parameters.AddWithValue("@email", owner.Email);
-                    cmd.Parameters.AddWithValue("@address", owner.Address);
-                    cmd.Parameters.AddWithValue("@phone", owner.Phone);
-                    cmd.Parameters.AddWithValue("@neighborhoodId", owner.NeighborhoodId);
-                    cmd.Parameters.AddWithValue("@id", owner.Id);
+                    cmd.Parameters.AddWithValue("@name", dog.Name);
+                    cmd.Parameters.AddWithValue("@ownerId", dog.OwnerId);
+                    cmd.Parameters.AddWithValue("@breed", dog.Breed);
+                    UpdateHelper.SetNullableString(cmd, "@notes", dog.Notes);
+                    UpdateHelper.SetNullableString(cmd, "@imageUrl", dog.ImageUrl);
+
+                    //UpdateHelper is checking to see if the value is Null and sending a Null value if it is
 
                     cmd.ExecuteNonQuery();
                 }

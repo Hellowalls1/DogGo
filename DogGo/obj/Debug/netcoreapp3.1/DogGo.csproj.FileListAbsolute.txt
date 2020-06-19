@@ -547,3 +547,4 @@ C:\Users\User\workspace\DogGo\DogGo\obj\Debug\netcoreapp3.1\Razor\Views\Owners\E
 C:\Users\User\workspace\DogGo\DogGo\obj\Debug\netcoreapp3.1\Razor\Views\Dogs\Index.cshtml.g.cs
 C:\Users\User\workspace\DogGo\DogGo\obj\Debug\netcoreapp3.1\Razor\Views\Dogs\Details.cshtml.g.cs
 C:\Users\User\workspace\DogGo\DogGo\obj\Debug\netcoreapp3.1\Razor\Views\Dogs\Create.cshtml.g.cs
+C:\Users\User\workspace\DogGo\DogGo\obj\Debug\netcoreapp3.1\Razor\Views\Dogs\Edit.cshtml.g.cs
